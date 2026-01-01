@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+
 
 
 # Create your models here.
@@ -39,7 +41,7 @@ class ProductImage(models.Model):
 
 class Review(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='reviews')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField()
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
