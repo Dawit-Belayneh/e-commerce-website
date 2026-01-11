@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'users',
     'payments',
     'api'
+    'rest_framework',
 ]
 
 AUTH_USER_MODEL = 'products.User'
