@@ -6,10 +6,11 @@ from rest_framework_simplejwt.views import (
 from . import views
 
 urlpatterns = [
+    path('signup/', views.SignupAPIView.as_view(), name='signup'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('users/', views.UserListCreateAPIView.as_view(), name='user-list-create'),
-    path('user/<int:pk>/', views.UserRetrieveUpdateDestroyAPIView.as_view(), name='user-detail'),
+    # path('users/', views.UserListCreateAPIView.as_view(), name='user-list-create'),
+    # path('user/<int:pk>/', views.UserRetrieveUpdateDestroyAPIView.as_view(), name='user-detail'),
     path('categories/', views.CategoryListCreateAPIView.as_view(), name='category-list-create'),
     path('category/<int:pk>/', views.CategoryRetrieveUpdateDestroyAPIView.as_view(), name='category-detail'),
     path('products/', views.ProductListCreateAPIView.as_view(), name='product-list-create'),

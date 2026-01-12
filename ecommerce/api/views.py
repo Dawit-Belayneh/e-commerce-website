@@ -1,22 +1,19 @@
 from django.shortcuts import render
 from rest_framework import generics
 from .serializers import (
-    UserSerializer, CategorySerializer, ProductSerializer, ProductImageSerializer,
+    SignupSerializer, CategorySerializer, ProductSerializer, ProductImageSerializer,
     ReviewSerializer, OrderSerializer, OrderItemSerializer, CartSerializer, CartItemSerializer,
     PaymentSerializer)
 from products.models import Product, Category, ProductImage, Review, User
 from orders.models import Order, OrderItem, Cart, CartItem
 from payments.models import Payment
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 # Create your views here.
-
-class UserListCreateAPIView(generics.ListCreateAPIView):
+class SignupAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-class UserRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = SignupSerializer
 
 class CategoryListCreateAPIView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
