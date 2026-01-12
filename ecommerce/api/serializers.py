@@ -1,12 +1,14 @@
 from rest_framework import serializers
-from products.models import Product, Category, ProductImage, Review, User
+from products.models import Product, Category, ProductImage, Review
 from orders.models import Order, OrderItem, Cart, CartItem
 from payments.models import Payment
+from django.contrib.auth.models import User
 
-class UserSerializer(serializers.ModelSerializer):
+class SignupSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password']
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
