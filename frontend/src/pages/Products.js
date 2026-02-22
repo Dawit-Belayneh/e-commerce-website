@@ -1,26 +1,42 @@
-import { useState, useEffect } from 'react';
-import API from '../api/axios';
+import { useState, useEffect } from "react";
+import API from "../api/axios";
 
-function Products(){
-    const [products, setProducts] = useState([]);
+function Products() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        API.get('products/')
-        .then(res => setProducts(res.data));
-    }, []);
+  useEffect(() => {
+    API.get("products/")
+      .then((res) => {
+        console.log("Backend data:", res.data); // debug
+        setProducts(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        setLoading(false);
+      });
+  }, []);
 
-    return (
-        <div>
-            <h1>Products</h1>
-            {products.map(p => (
-                <div key={p.id}>
-                    <h2>{p.name}</h2>
-                    <p>{p.description}</p>
-                    <p>{p.price} ETB</p>
-                </div>
-            ))}
-        </div>
-    );
+  if (loading) return <h2>Loading...</h2>;
+
+  return (
+    <div>
+      <h1>Products</h1>
+
+      {products.length === 0 ? (
+        <p>No products found</p>
+      ) : (
+        products.map((product) => (
+          <div key={product.id} style={{ border: "1px solid gray", margin: "10px", padding: "10px" }}>
+            <h3>{product.name}</h3>
+            <p>Price: {product.price} ETB</p>
+            <p>{product.description}</p>
+          </div>
+        ))
+      )}
+    </div>
+  );
 }
 
 export default Products;
