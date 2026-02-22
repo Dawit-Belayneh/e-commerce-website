@@ -8,7 +8,7 @@ function Products() {
   useEffect(() => {
     API.get("products/")
       .then((res) => {
-        console.log("Backend data:", res.data); // debug
+        console.log("Backend data:", res.data);
         setProducts(res.data);
         setLoading(false);
       })
