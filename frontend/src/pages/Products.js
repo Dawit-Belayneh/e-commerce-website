@@ -1,8 +1,8 @@
-import { useEffect, useSate } from 'react';
+import { useState, useEffect } from 'react';
 import API from '../api/axios';
 
 function Products(){
-    const [products, setProducts] = useSate([]);
+    const [products, setProducts] = useState([]);
 
     useEffect(() => {
         API.get('products/')
