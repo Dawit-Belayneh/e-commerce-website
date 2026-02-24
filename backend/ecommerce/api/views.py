@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import generics
 from .serializers import (
     SignupSerializer, CategorySerializer, ProductSerializer, ProductImageSerializer,
@@ -12,6 +13,7 @@ User = get_user_model()
 
 # Create your views here.
 class SignupAPIView(generics.CreateAPIView):
+    permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = SignupSerializer
 
@@ -24,6 +26,7 @@ class CategoryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView
     serializer_class = CategorySerializer
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
+    permission_classes = [AllowAny]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
