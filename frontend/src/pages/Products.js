@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import API from "../api/axios";
+// import "./Products.css"; // We will create this file next
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -8,7 +9,6 @@ function Products() {
   useEffect(() => {
     API.get("products/")
       .then((res) => {
-        console.log("Backend data:", res.data);
         setProducts(res.data);
         setLoading(false);
       })
@@ -18,22 +18,49 @@ function Products() {
       });
   }, []);
 
-  if (loading) return <h2>Loading...</h2>;
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <div className="spinner"></div>
+        <p>Fetching amazing products...</p>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h1>Products</h1>
+    <div className="products-container">
+      <header className="products-header">
+        <h1>Our Collection</h1>
+        <p>Discover our latest arrivals and best sellers.</p>
+      </header>
 
       {products.length === 0 ? (
-        <p>No products found</p>
+        <div className="empty-state">
+          <p>No products found. Check back later!</p>
+        </div>
       ) : (
-        products.map((product) => (
-          <div key={product.id} style={{ border: "1px solid gray", margin: "10px", padding: "10px" }}>
-            <h3>{product.name}</h3>
-            <p>Price: {product.price} ETB</p>
-            <p>{product.description}</p>
-          </div>
-        ))
+        <div className="products-grid">
+          {products.map((product) => (
+            <div key={product.id} className="product-card">
+              <div className="product-image">
+                {/* Fallback to a placeholder if your API doesn't have images yet */}
+                <img 
+                  src={product.image || "https://via.placeholder.com/300x200?text=Product"} 
+                  alt={product.name} 
+                />
+              </div>
+              <div className="product-info">
+                <span className="category-tag">New Arrival</span>
+                <h3>{product.name}</h3>
+                <p className="description">{product.description}</p>
+                <div className="card-footer">
+                  <span className="price">{product.price} <small>ETB</small></span>
+                  <button className="add-btn">Add to Cart</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
