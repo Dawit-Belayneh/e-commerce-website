@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import API from "../api/axios";
-// import "./Products.css"; // We will create this file next
+import "./Products.css"; // We will create this file next
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -45,7 +45,7 @@ function Products() {
               <div className="product-image">
                 {/* Fallback to a placeholder if your API doesn't have images yet */}
                 <img 
-                  src={product.image || "https://via.placeholder.com/300x200?text=Product"} 
+                  src={product.main_image || "https://via.placeholder.com/300"} 
                   alt={product.name} 
                 />
               </div>
