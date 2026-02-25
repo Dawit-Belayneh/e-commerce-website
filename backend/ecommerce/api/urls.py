@@ -29,4 +29,4 @@ urlpatterns = [
     path('cart-item/<int:pk>/', views.CartItemRetrieveUpdateDestroyAPIView.as_view(), name='cart-item-detail'),
     path('payments/', views.PaymentListCreateAPIView.as_view(), name='payment-list-create'),
     path('payment/<int:pk>/', views.PaymentRetrieveUpdateDestroyAPIView.as_view(), name='payment-detail'),
-]
+] 

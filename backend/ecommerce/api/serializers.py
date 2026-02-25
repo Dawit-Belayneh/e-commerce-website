@@ -28,18 +28,24 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
+    main_image = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = '__all__'
 
+    def get_main_image(self, obj):
+        main = obj.images.filter(is_main=True).first()
+        if main:
+            return main.image
+        return None
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = '__all__'
+        fields = ['image', 'is_main']
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
-        modle = Review
+        model = Review
         fields = '__all__'
 
 # Serializers for Order and OrderItem models

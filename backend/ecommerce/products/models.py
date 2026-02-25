@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from cloudinary.models import CloudinaryField
+from django.forms import URLField
 
 
 
@@ -33,7 +35,7 @@ class Product(models.Model):
     
 class ProductImage(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='product_images/')
+    image = models.URLField()
     is_main = models.BooleanField(default=False)
 
     def __str__(self):
