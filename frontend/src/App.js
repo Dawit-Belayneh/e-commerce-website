@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route} from 'react-router-dom';
 // import Register from './pages/Register';
 import Products from './pages/Products';
 // import Cart from './pages/Cart';
+import Home from './pages/Home';
 
 
 
@@ -10,7 +11,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path = "/" element={<Products />} />
+        <Route path = "/" element={<Home />} />
+        <Route path = "/products" element={<Products />} />
         {/* <Route path = "/login" element={<Login />} />
         <Route path = "/register" element={<Register />} />
         <Route path = "/cart" element={<Cart />} /> */}
