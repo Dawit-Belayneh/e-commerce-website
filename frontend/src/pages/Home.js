@@ -3,6 +3,7 @@ import Products from "./Products"; // Use your existing Products component
 import Footer from "./Footer";
 import "./Home.css";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
   
@@ -68,13 +69,15 @@ function Home() {
       <section className="categories-section">
         <div className="category-header">
           <h2>Shop by Category</h2>
-          <button className="show-more-btn">Show More</button>
+            <Link to="/categories" className="more-link">
+              More →
+            </Link>
         </div>
 
-        <div className="scroll-buttons">
+        {/* <div className="scroll-buttons">
           <button onClick={() => scroll("left")} className="arrow-btn">◀</button>
           <button onClick={() => scroll("right")} className="arrow-btn">▶</button>
-        </div>
+        </div> */}
 
         <div className="category-grid" ref={scrollRef}>
           {categories.map((cat, index) => (
