@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from products.models import Product, Category, ProductImage, Review
+from products.models import Product, Category, ProductImage, Review, CategoryImage
 from orders.models import Order, OrderItem, Cart, CartItem
 from payments.models import Payment
 from django.contrib.auth import get_user_model
@@ -23,9 +23,21 @@ class SignupSerializer(serializers.ModelSerializer):
         return user
 
 class CategorySerializer(serializers.ModelSerializer):
+    main_image = serializers.SerializerMethodField()
     class Meta:
         model = Category
         fields = '__all__'
+
+    def get_main_image(self, obj):
+        main = obj.images.filter(is_main=True).first()
+        if main:
+            return main.image
+        return None
+
+class CategoryImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CategoryImage
+        fields = ['image', 'is_main']
 
 class ProductSerializer(serializers.ModelSerializer):
     main_image = serializers.SerializerMethodField()

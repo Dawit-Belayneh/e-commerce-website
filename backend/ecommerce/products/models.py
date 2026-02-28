@@ -18,6 +18,14 @@ class Category(models.Model):
     def __str__(self):
         return self.name
     
+class CategoryImage(models.Model):
+    category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='images')
+    image = models.URLField()
+    is_main = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Image for {self.category.name}"
+    
 class Product(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
