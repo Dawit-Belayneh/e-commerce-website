@@ -30,6 +30,7 @@ function Login(){
             //save JWT tokens
             localStorage.setItem("access_token", res.data.access);
             localStorage.setItem("refresh_token", res.data.refresh);
+            localStorage.setItem("username", formData.username);
 
             alert("Login successful!");
             navigate("/");
