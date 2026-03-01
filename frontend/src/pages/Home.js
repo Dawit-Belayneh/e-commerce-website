@@ -4,53 +4,23 @@ import Footer from "./Footer";
 import "./Home.css";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
+import useCategories from "../hooks/useCategories";
 
 function Home() {
   
     const scrollRef = useRef(null);
+    const { categories, loading } = useCategories();
 
-  const categories = [
-    {
-      name: "Electronics",
-      image: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-    },
-    {
-      name: "Fashion",
-      image: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-    },
-    {
-      name: "Home Decor",
-      image: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-    },
-    {
-      name: "Beauty",
-      image: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-    },
-        {
-      name: "Electronics",
-      image: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-    },
-    {
-      name: "Fashion",
-      image: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-    },
-    {
-      name: "Home Decor",
-      image: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-    },
-    {
-      name: "Beauty",
-      image: "https://res.cloudinary.com/demo/image/upload/sample.jpg"
-    }
-  ];
+    if (loading) return <p>Loading categories...</p>
 
-  const scroll = (direction) => {
-    if (direction === "left") {
-      scrollRef.current.scrollLeft -= 300;
-    } else {
-      scrollRef.current.scrollLeft += 300;
-    }
-  };
+
+  // const scroll = (direction) => {
+  //   if (direction === "left") {
+  //     scrollRef.current.scrollLeft -= 300;
+  //   } else {
+  //     scrollRef.current.scrollLeft += 300;
+  //   }
+  // };
 
   return (
     <div className="home-wrapper">
@@ -74,16 +44,11 @@ function Home() {
             </Link>
         </div>
 
-        {/* <div className="scroll-buttons">
-          <button onClick={() => scroll("left")} className="arrow-btn">◀</button>
-          <button onClick={() => scroll("right")} className="arrow-btn">▶</button>
-        </div> */}
-
         <div className="category-grid" ref={scrollRef}>
-          {categories.map((cat, index) => (
-            <div key={index} className="category-card">
-              <img src={cat.image} alt={cat.name} />
-              <h4>{cat.name}</h4>
+          {categories.map((category) => (
+            <div key={category.id} className="category-card">
+              <img src={category.main_image || "https://via.placeholder.com/300"} alt={category.name} />
+              <h4>{category.name}</h4>
               <button className="explore-btn">Explore →</button>
             </div>
           ))}

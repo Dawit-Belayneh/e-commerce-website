@@ -3,9 +3,8 @@ import "./Home.css";
 function Navbar(){
     return(
         <nav className="navbar">
-            <div className="nav-logo">Ethio<sapn>Shop</sapn></div>
+            <div className="nav-logo"><a href="/">Ethio<span>Shop</span></a></div>
             <ul className="nav-links">
-                <li><a href="/">Home</a></li>
                 <li><a href="/products">Products</a></li>
                 <li><a href="/categories">Categories</a></li>
                 <li><a href="/about">About Us</a></li>
