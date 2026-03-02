@@ -1,11 +1,13 @@
 import "./Home.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {useEffect, useState} from "react";
 
 
 function Navbar(){
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
     const [username, setUsername] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         const token = localStorage.getItem("access_token");
@@ -25,6 +27,14 @@ function Navbar(){
         setIsLoggedIn(false);
     };
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()){
+            navigate(`/products?search=${searchQuery}`);
+            navigate(`/categories?search=${searchQuery}`);
+        }
+    }
+
     return(
         <nav className="navbar">
             <div className="nav-logo"><Link to="/">Ethio<span>Shop</span></Link></div>
@@ -33,11 +43,24 @@ function Navbar(){
                 <li><Link to="/categories">Categories</Link></li>
                 <li><Link to="/about">About Us</Link></li>
                 <li><Link to="/contact">Contact</Link></li>
-                
+
+            </ul>
+            {/* --- SEARCH BAR START --- */}
+            <form className="nav-search" onSubmit={handleSearch}>
+                <input 
+                    type="text" 
+                    placeholder="Search for products..." 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button type="submit">🔍</button>
+            </form>
+            {/* --- SEARCH BAR END --- */}
+            <ul className="nav-links auth-links">  
                 {isLoggedIn ? (
                     <>
                         <li><span className="username"><Link to={`/profile/${username}`}>{username}</Link></span></li>
-                        <li><button onClick={handleLogout}>Logout</button></li>
+                        <li><button className="logout-btn" onClick={handleLogout}>Logout</button></li>
                     </>
                 ) : (
                     <>
