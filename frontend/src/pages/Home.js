@@ -1,6 +1,6 @@
 import Navbar from "./Navbar";
-import Products from "./Products"; // Use your existing Products component
 import Footer from "./Footer";
+import FeaturedProducts  from "./FeaturedProducts";
 import "./Home.css";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
@@ -61,7 +61,12 @@ function Home() {
           <h2>Featured Products</h2>
           <hr />
         </div>
-        <Products /> {/* This calls your existing product grid logic */}
+          {/* PASSING A "HOME" VARIANT TO GET A DIFFERENT STYLE */}
+          <FeaturedProducts limit={8} />
+
+          <div className="view-all-center">
+            <Link to="/products" className="btn-outline">View All Products</Link>
+          </div>
       </main>
 
       <Footer />
