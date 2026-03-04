@@ -13,19 +13,29 @@ function FeaturedProducts({ limit }){
     }, [limit]);
 
     return(
-        <div className="featured-products-grid">
-            {products.map((product) => (
-                <div key={product.id} className="item-card">
-                    <div className="item-image">
-                        <img src={product.main_image || "https://via.placeholder.com/300"} alt={product.name} />
-                        <span className="badge">new</span>
+        <div className="featured-container">
+            <div className="featured-grid">
+                {products.map((product) => (
+                    <div key={product.id} className="product-card-v2">
+                        <div className="image-wrapper">
+                            <img src={product.main_image || "https://via.placeholder.com/300"} alt={product.name} />
+                            <div className="overlay-actions">
+                                <button className="quick-view">Quick View</button>
+                            </div>
+                        </div>
+                        <div className="info-wrapper">
+                            <p className="brand-name">EthioShop Selection</p>
+                            <h3 className="product-title">{product.name}</h3>
+                            <div className="price-row">
+                                <span className="current-price">{product.price} ETB</span>
+                                <button className="add-to-cart-icon">
+                                    <span>+</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div className="item-info">
-                        <h3>{product.name}</h3>
-                        <p className="item-price">{product.price} <span>ETB</span></p>
-                    </div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
 
     );

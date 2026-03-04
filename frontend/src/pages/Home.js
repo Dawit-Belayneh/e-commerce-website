@@ -8,19 +8,10 @@ import useCategories from "../hooks/useCategories";
 
 function Home() {
   
-    const scrollRef = useRef(null);
-    const { categories, loading } = useCategories();
+  const scrollRef = useRef(null);
+  const { categories, loading } = useCategories();
 
-    if (loading) return <p>Loading categories...</p>
-
-
-  // const scroll = (direction) => {
-  //   if (direction === "left") {
-  //     scrollRef.current.scrollLeft -= 300;
-  //   } else {
-  //     scrollRef.current.scrollLeft += 300;
-  //   }
-  // };
+  if (loading) return <p>Loading categories...</p>
 
   return (
     <div className="home-wrapper">
@@ -39,19 +30,32 @@ function Home() {
       <section className="categories-section">
         <div className="category-header">
           <h2>Shop by Category</h2>
-            <Link to="/categories" className="more-link">
-              More →
-            </Link>
+          <Link to="/categories" className="more-link">See all</Link>
         </div>
 
-        <div className="category-grid" ref={scrollRef}>
-          {categories.map((category) => (
-            <div key={category.id} className="category-card">
-              <img src={category.main_image || "https://via.placeholder.com/300"} alt={category.name} />
-              <h4>{category.name}</h4>
-              <button className="explore-btn">Explore →</button>
-            </div>
-          ))}
+        <div className="category-slider-wrapper">
+          {/* The floating navigation button - styled as a white circle with > */}
+          <div className="scroll-nav-container">
+            <button 
+              className="scroll-btn-right" 
+              onClick={() => {
+                document.querySelector('.category-grid').scrollBy({ left: 300, behavior: 'smooth' });
+              }}
+            >
+              <span className="icon">›</span>
+            </button>
+          </div>
+
+          <div className="category-grid">
+            {categories.map((category) => (
+              <div key={category.id} className="category-card">
+                <div className="cat-img-box">
+                  <img src={category.main_image || "https://via.placeholder.com/300"} alt={category.name} />
+                </div>
+                <h4 className="category-title-text">{category.name}</h4>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -59,7 +63,6 @@ function Home() {
       <main className="main-content">
         <div className="section-title">
           <h2>Featured Products</h2>
-          <hr />
         </div>
           {/* PASSING A "HOME" VARIANT TO GET A DIFFERENT STYLE */}
           <FeaturedProducts limit={8} />
