@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./FeaturedProducts.css";    
 import API from "../api/axios"
 
 
 function FeaturedProducts({ limit }){
     const [products, setProducts] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         API.get("products/")
@@ -16,7 +18,7 @@ function FeaturedProducts({ limit }){
         <div className="featured-container">
             <div className="featured-grid">
                 {products.map((product) => (
-                    <div key={product.id} className="product-card-v2">
+                    <div key={product.id} className="product-card-v2" onClick={() => navigate(`/product/${product.slug}`)}>
                         <div className="image-wrapper">
                             <img src={product.main_image || "https://via.placeholder.com/300"} alt={product.name} />
                             <div className="overlay-actions">
