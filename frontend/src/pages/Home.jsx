@@ -33,9 +33,19 @@ function Home() {
 
         <div className="category-slider-wrapper">
           {/* The floating navigation button - styled as a white circle with > */}
-          <div className="scroll-nav-container">
+          <div className="scroll-nav-container left">
             <button 
-              className="scroll-btn-right" 
+              className="scroll-btn-side" 
+              onClick={() => {
+                document.querySelector('.category-grid').scrollBy({ left: -300, behavior: 'smooth' });
+              }}
+            >
+              <span className="icon">‹</span>
+            </button>
+          </div>
+          <div className="scroll-nav-container right">
+            <button 
+              className="scroll-btn-side" 
               onClick={() => {
                 document.querySelector('.category-grid').scrollBy({ left: 300, behavior: 'smooth' });
               }}

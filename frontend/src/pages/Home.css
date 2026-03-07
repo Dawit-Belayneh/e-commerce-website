@@ -207,31 +207,49 @@
 /* Floating Button Positioning */
 .scroll-nav-container {
   position: absolute;
-  right: 0;
+  top: 50%;
   z-index: 10;
+  transform: translateY(-50%);
 }
 
-.scroll-btn-right {
+.scroll-nav-container.left {
+  left: 0;
+} 
+
+.scroll-nav-container.right {
+  right: 0;
+}
+
+.scroll-btn-side {
   background: #fff;
   border: none;
-  width: 40px;
-  height: 35px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15); /* Soft shadow like your image */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Soft shadow like your image */
   cursor: pointer;
   margin-right: -25px; /* Hangs over the edge like image 0 */
-  transition: transform 0.2s;
+  transition: all  0.2s ease;;
 }
 
-.scroll-btn-right:hover {
+.scroll-nav-container.left .scroll-btn-side {
+  margin-left: -22px;
+}
+
+.scroll-nav-container.right .scroll-btn-side {
+  margin-right: -22px;
+}
+
+.scroll-btn-side:hover {
+  background-color: #f8f8f8;
   transform: scale(1.1);
 }
 
-.scroll-btn-right .icon {
-  font-size: 35px; /* Large thin arrow from image 1 */
+.scroll-btn-side .icon {
+  font-size: 32px;
   font-weight: 200;
   color: #000;
   line-height: 1;
