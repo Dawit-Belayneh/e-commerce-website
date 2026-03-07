@@ -1,0 +1,97 @@
+.categories-page-wrapper {
+    background-color: #fff;
+}
+
+.page-header {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: #f8f8f8;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+}
+
+.categories-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 5%;
+}
+
+/* 4-column grid that becomes 2-column on tablet and 1-column on mobile */
+.categories-full-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.category-item-card {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+}
+
+.category-image-box {
+    background-color: #f8f8f8; /* Pale background from image 0 */
+    border-radius: 16px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.category-image-box img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+}
+
+/* Hover Effect: Show overlay and zoom image */
+.category-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.category-overlay span {
+    background: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.category-item-card:hover .category-overlay {
+    opacity: 1;
+}
+
+.category-item-card:hover img {
+    transform: scale(1.1);
+}
+
+.category-info {
+    padding: 20px 5px;
+    text-align: center;
+}
+
+.category-info h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.category-info p {
+    color: #666;
+    font-size: 0.9rem;
+}

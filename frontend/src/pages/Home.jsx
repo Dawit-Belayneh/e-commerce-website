@@ -2,13 +2,11 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import FeaturedProducts  from "./FeaturedProducts";
 import "./Home.css";
-import { useRef } from "react";
 import { Link } from "react-router-dom";
 import useCategories from "../hooks/useCategories";
 
 function Home() {
   
-  const scrollRef = useRef(null);
   const { categories, loading } = useCategories();
 
   if (loading) return <p>Loading categories...</p>
