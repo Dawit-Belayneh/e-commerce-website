@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
-from rest_framework import generics
+from rest_framework import generics, filters
 from .serializers import (
     SignupSerializer, CategorySerializer, ProductSerializer, ProductImageSerializer,
     ReviewSerializer, OrderSerializer, OrderItemSerializer, CartSerializer, CartItemSerializer,
@@ -9,6 +9,7 @@ from products.models import Product, Category, ProductImage, Review, User
 from orders.models import Order, OrderItem, Cart, CartItem
 from payments.models import Payment
 from django.contrib.auth import get_user_model
+from django_filters.rest_framework import DjangoFilterBackend
 User = get_user_model()
 
 # Create your views here.
@@ -20,6 +21,9 @@ class SignupAPIView(generics.CreateAPIView):
 class CategoryListCreateAPIView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['name']
+    search_fields = ['name']
     
     def get_permissions(self):
         if self.request.method == 'GET':
@@ -34,6 +38,9 @@ class CategoryRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['name', 'category', 'price', 'discount_price']
+    search_fields = ['name', 'description', 'category', 'price', 'discount_price']
 
     def get_permissions(self):
         if self.request.method == 'GET':
