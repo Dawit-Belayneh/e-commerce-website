@@ -2,12 +2,13 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import FeaturedProducts  from "./FeaturedProducts";
 import "./Home.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useCategories from "../hooks/useCategories";
 
 function Home() {
   
   const { categories, loading } = useCategories();
+  const navigate = useNavigate();
 
   if (loading) return <p>Loading categories...</p>
 
@@ -20,7 +21,7 @@ function Home() {
         <div className="hero-content">
           <h1>Quality Products, <br/> Delivered to You.</h1>
           <p>Shop the latest trends with fast delivery across Ethiopia.</p>
-          <button className="shop-now-btn">Shop Now</button>
+          <button className="shop-now-btn" onClick={() => navigate("/products")}>Shop Now</button>
         </div>
       </header>
 
