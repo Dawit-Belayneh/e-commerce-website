@@ -39,9 +39,12 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['name', 'category', 'price', 'discount_price']
-    search_fields = ['name', 'description', 'category', 'price', 'discount_price']
-
+    filterset_fields = {
+        'category__name': ['exact', 'icontains'], 
+        'price': ['gte', 'lte'],
+        'name': ['icontains'],
+    }
+    search_fields = ['name', 'description', 'category__name']
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
