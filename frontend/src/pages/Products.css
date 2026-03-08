@@ -132,6 +132,21 @@
   background: #0984e3;
 }
 
+.clear-filter-btn {
+  margin-top: 10px;
+  background: #f1f2f6;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.clear-filter-btn:hover {
+  background: #dfe6e9;
+}
+
 /* Loader Styling */
 .loader-container {
   height: 80vh;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import API from "../api/axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -10,8 +10,17 @@ function Products() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  //Logic to grab the category from the URL
+  const [searchParams] = useSearchParams();
+  const categoryFilter = searchParams.get('category');
+
   useEffect(() => {
-    API.get("products/")
+    setLoading(true);
+    const fetchUrl = categoryFilter
+      ? `products/?category__name=${categoryFilter}`
+      : "products/";
+
+    API.get(fetchUrl)
       .then((res) => {
         setProducts(res.data);
         setLoading(false);
@@ -20,7 +29,7 @@ function Products() {
         console.error("Error:", err);
         setLoading(false);
       });
-  }, []);
+  }, [categoryFilter]);
 
   if (loading) {
     return (
@@ -37,8 +46,14 @@ function Products() {
 
       <div className="products-container">
         <header className="products-header">
-          <h1>Our Collection</h1>
+          <h1>{categoryFilter ? `${categoryFilter} Collection` : "Our Collection"}</h1>
           <p>Premium quality items delivered to your doorstep.</p>
+
+          {categoryFilter && (
+            <button className="clear-filter-btn" onClick={() => navigate("/products")}>
+              View All Products
+            </button>
+          )}
         </header>
 
         {products.length === 0 ? (
@@ -86,7 +101,15 @@ function Products() {
                         <span className="old-price">{product.price} ETB</span>
                       )}
                     </div>
-                    <button className="add-to-cart-btn">Add to Cart</button>
+                    <button 
+                      className="add-to-cart-btn"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevents navigating to detail page when clicking button
+                        alert("Added to cart!");
+                        }}
+                      >
+                        Add to Cart
+                        </button>
                   </div>
                 </div>
               );

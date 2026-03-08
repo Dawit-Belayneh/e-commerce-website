@@ -40,7 +40,11 @@ function CategoriesHomePage({ limit }) {
 
           <div className="category-grid">
             {categories.map((category) => (
-              <div key={category.id} className="category-card">
+              <div 
+                key={category.id} 
+                className="category-card"
+                onClick={() => navigate(`products?category=${category.name}`)}
+                >
                 <div className="cat-img-box">
                   <img src={category.main_image || "https://via.placeholder.com/300"} alt={category.name} />
                 </div>
