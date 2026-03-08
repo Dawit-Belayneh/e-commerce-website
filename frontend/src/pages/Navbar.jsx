@@ -30,8 +30,7 @@ function Navbar(){
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchQuery.trim()){
-            navigate(`/products?search=${searchQuery}`);
-            navigate(`/categories?search=${searchQuery}`);
+            navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
         }
     }
 

@@ -13,12 +13,21 @@ function Products() {
   //Logic to grab the category from the URL
   const [searchParams] = useSearchParams();
   const categoryFilter = searchParams.get('category');
+  const searchQuery = searchParams.get('search');
 
   useEffect(() => {
     setLoading(true);
-    const fetchUrl = categoryFilter
-      ? `products/?category__name=${categoryFilter}`
-      : "products/";
+
+    let fetchUrl = "products/";
+
+    if (searchQuery) {
+      fetchUrl += `?search=${searchQuery}`;
+    }else if (categoryFilter){
+      fetchUrl += `?category__name=${categoryFilter}`;
+    }
+    // const fetchUrl = categoryFilter
+    //   ? `products/?category__name=${categoryFilter}`
+    //   : "products/";
 
     API.get(fetchUrl)
       .then((res) => {
@@ -29,7 +38,7 @@ function Products() {
         console.error("Error:", err);
         setLoading(false);
       });
-  }, [categoryFilter]);
+  }, [categoryFilter, searchQuery]);
 
   if (loading) {
     return (
@@ -46,10 +55,16 @@ function Products() {
 
       <div className="products-container">
         <header className="products-header">
-          <h1>{categoryFilter ? `${categoryFilter} Collection` : "Our Collection"}</h1>
-          <p>Premium quality items delivered to your doorstep.</p>
+          <h1>
+            {searchQuery 
+              ? `Results for "${searchQuery}"` 
+              : categoryFilter 
+                ? `${categoryFilter} Collection` 
+                : "Our Collection"}
+          </h1>
+          <p>{products.length} {products.length === 1 ? 'item' : 'items'} found</p>
 
-          {categoryFilter && (
+          {(categoryFilter || searchQuery) && (
             <button className="clear-filter-btn" onClick={() => navigate("/products")}>
               View All Products
             </button>

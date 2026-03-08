@@ -95,6 +95,19 @@
   margin-bottom: 8px;
 }
 
+.empty-state {
+  text-align: center;
+  padding: 100px 20px;
+  background: #f9f9f9;
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+  color: #666;
+}
+
 /* Price Box */
 .price-container {
   display: flex;
