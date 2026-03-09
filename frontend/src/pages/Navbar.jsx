@@ -8,8 +8,12 @@ function Navbar(){
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [cartCount, setCartCount] = useState(0);
+
+
 
     useEffect(() => {
+        // --- 1. LOGIN LOGIC (Existing) ---
         const token = localStorage.getItem("access_token");
 
         if (token){
@@ -18,6 +22,22 @@ function Navbar(){
             const savedUsername = localStorage.getItem("username");
             setUsername(savedUsername || "Account");
         }
+
+        // --- CART COUNT LOGIC ---
+  const updateCount = () => {
+    const cartData = JSON.parse(localStorage.getItem("cart")) || [];
+    const total = cartData.reduce((acc, item) => acc + (item.quantity || 0), 0);
+    setCartCount(total);
+  };
+
+  // Run once on mount
+    updateCount();
+
+  // Listen for the signal from ProductDetail
+    window.addEventListener("cartUpdated", updateCount);
+
+  // Clean up
+    return () => window.removeEventListener("cartUpdated", updateCount);
     }, []);
 
     const handleLogout = () => {
@@ -80,7 +100,7 @@ function Navbar(){
                 <div className="nav-icon">
                     <Link to="/cart" className="cart-wrapper">
                         <span className="cart-icon">🛒</span>
-                        <span className="cart-count">0</span>
+                        <span className="cart-count">{cartCount}</span>
                     </Link>
                 </div>
             </div>

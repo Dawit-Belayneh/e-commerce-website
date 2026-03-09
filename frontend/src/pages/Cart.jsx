@@ -9,10 +9,18 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   
   // Mock data - In a real app, you'd fetch this from localStorage or an API
-  useEffect(() => {
+useEffect(() => {
+  const loadCart = () => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCartItems(savedCart);
-  }, []);
+  };
+
+  loadCart();
+  
+  // Also listen for changes here in case user opens multiple tabs
+  window.addEventListener("cartUpdated", loadCart);
+  return () => window.removeEventListener("cartUpdated", loadCart);
+}, []);
 
   const updateQuantity = (id, delta) => {
     const updated = cartItems.map(item => {

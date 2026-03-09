@@ -37,6 +37,35 @@ function ProductDetail() {
   if (loading) return <div className="loader">Loading Product...</div>;
   if (!product) return <div className="error">Product not found.</div>;
 
+  const addToCart = () => {
+  // 1. Get existing cart
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // 2. Check if product is already there
+  const existingItemIndex = cart.findIndex((item) => item.id === product.id);
+
+  if (existingItemIndex > -1) {
+    // Increase quantity if it exists
+    cart[existingItemIndex].quantity += quantity;
+  } else {
+    // Add new item if it doesn't
+    cart.push({
+      id: product.id,
+      name: product.name,
+      price: product.discount_price || product.price,
+      main_image: product.main_image,
+      quantity: quantity,
+    });
+  }
+
+  // 3. Save to localStorage
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  // 4. IMPORTANT: Send the signal to Navbar
+  window.dispatchEvent(new Event("cartUpdated"));
+
+  alert("Item added to cart!");
+};
   const hasDiscount = product.discount_price && Number(product.discount_price) > 0;
   const currentPrice = hasDiscount ? product.discount_price : product.price;
 
@@ -80,8 +109,12 @@ function ProductDetail() {
               </div>
               
               <div className="action-buttons">
-                <button className="add-cart-btn" onClick={() => alert("Added to Cart")}>Add to Cart</button>
-                <button className="buy-now-btn" onClick={() => navigate("/checkout")}>Buy It Now</button>
+                <button className="add-cart-btn" onClick={addToCart}>
+                  Add to Cart
+                </button>
+                <button className="buy-now-btn" onClick={() => navigate("/checkout")}>
+                  Buy It Now
+                </button>
               </div>
             </div>
 
