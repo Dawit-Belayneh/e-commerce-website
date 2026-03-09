@@ -53,7 +53,13 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
 class ProductRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAdminUser()]
+
+    lookup_field = 'slug'
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdminUser()]
 
 class ProductImageListCreateAPIView(generics.ListCreateAPIView):
     queryset = ProductImage.objects.all()
