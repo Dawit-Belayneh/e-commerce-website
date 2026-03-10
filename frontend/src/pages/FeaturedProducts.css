@@ -31,6 +31,19 @@
     border-radius: 12px;
 }
 
+.featured-sale-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #ff4757;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    z-index: 2;
+}
+
 .image-wrapper img {
     max-width: 85%;
     max-height: 85%;
@@ -74,6 +87,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.price-stack {
+    display: flex;
+    flex-direction: column;
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 0.85rem;
 }
 
 .current-price {

@@ -17,29 +17,35 @@ function FeaturedProducts({ limit }){
     return(
         <div className="featured-container">
             <div className="featured-grid">
-                {products.map((product) => (
-                    <div key={product.id} className="product-card-v2" onClick={() => navigate(`/product/${product.slug}`)}>
-                        <div className="image-wrapper">
-                            <img src={product.main_image || "https://via.placeholder.com/300"} alt={product.name} />
-                            <div className="overlay-actions">
-                                <button className="quick-view">Quick View</button>
+                {products.map((product) => {
+                    const hasDiscount = product.discount_price && Number(product.discount_price) > 0;
+                    const displayPrice = hasDiscount ? product.discount_price : product.price;
+                    return (
+                        <div key={product.id} className="product-card-v2" onClick={() => navigate(`/product/${product.slug}`)}>
+                            <div className="image-wrapper">
+                                {hasDiscount && <span className="featured-sale-tag">Sale</span>}
+                                <img src={product.main_image || "https://via.placeholder.com/300"} alt={product.name} />
+                                <div className="overlay-actions">
+                                    <button className="quick-view">Quick View</button>
+                                </div>
+                            </div>
+                            <div className="info-wrapper">
+                                <p className="brand-name">EthioShop Selection</p>
+                                <h3 className="product-title">{product.name}</h3>
+                                <div className="price-row">
+                                    <div className="price-stack">
+                                        <span className="current-price">{displayPrice} ETB</span>
+                                        {hasDiscount && (
+                                            <span className="old-price">{product.price} ETB</span>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="info-wrapper">
-                            <p className="brand-name">EthioShop Selection</p>
-                            <h3 className="product-title">{product.name}</h3>
-                            <div className="price-row">
-                                <span className="current-price">{product.price} ETB</span>
-                                <button className="add-to-cart-icon">
-                                    <span>+</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
-
     );
 }
 
