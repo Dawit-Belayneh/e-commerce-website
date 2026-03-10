@@ -49,6 +49,38 @@ function Products() {
     );
   }
 
+
+  const addToCart = (e, product, quantity) => {
+    e.stopPropagation();
+  // 1. Get existing cart
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  // 2. Check if product is already there
+  const existingItemIndex = cart.findIndex((item) => item.id === product.id);
+
+  if (existingItemIndex > -1) {
+    // Increase quantity if it exists
+    cart[existingItemIndex].quantity += quantity;
+  } else {
+    // Add new item if it doesn't
+    cart.push({
+      id: product.id,
+      name: product.name,
+      price: product.discount_price || product.price,
+      main_image: product.main_image,
+      quantity: quantity,
+    });
+  }
+
+  // 3. Save to localStorage
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  // 4. IMPORTANT: Send the signal to Navbar
+  window.dispatchEvent(new Event("cartUpdated"));
+
+  alert("Item added to cart!");
+};
+
   return (
     <div className="page-layout">
       <Navbar />
@@ -118,10 +150,7 @@ function Products() {
                     </div>
                     <button 
                       className="add-to-cart-btn"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevents navigating to detail page when clicking button
-                        alert("Added to cart!");
-                        }}
+                      onClick={(e) => addToCart(e, product, 1)}
                       >
                         Add to Cart
                         </button>
