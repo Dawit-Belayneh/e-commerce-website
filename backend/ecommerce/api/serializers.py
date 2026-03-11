@@ -41,6 +41,7 @@ class CategoryImageSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     main_image = serializers.SerializerMethodField()
+    category_name = serializers.ReadOnlyField(source='category.name')
     class Meta:
         model = Product
         fields = '__all__'
