@@ -24,8 +24,10 @@ function ProductDetail() {
         return API.get(`products/?category__name=${res.data.category_name}&limit=4`);
       })
       .then((res) => {
-        const data = res.data.results || res.data;
-        setRelatedProducts(data.filter(p => p.slug !== slug));
+        const allProducts = res.data.results || res.data;
+        
+        const filtered = allProducts.filter(p => p.slug !== slug)
+        setRelatedProducts(filtered);
         setLoading(false);
       })
       .catch((err) => {
@@ -153,17 +155,27 @@ function ProductDetail() {
         <section className="related-section">
           <h2>You May Also Like</h2>
           <div className="products-grid">
-            {relatedProducts.map(item => (
-              <div key={item.id} className="product-card" onClick={() => navigate(`/product/${item.slug}`)}>
-                 <div className="product-image-wrapper">
-                    <img src={item.main_image} alt={item.name} />
-                 </div>
-                 <div className="product-info">
-                    <h4>{item.name}</h4>
-                    <p className="current-price">{item.discount_price || item.price} ETB</p>
-                 </div>
-              </div>
-            ))}
+            {relatedProducts.map(item => {
+              const itemHasDiscount = item.discount_price && Number(item.discount_price) > 0;
+              const itemDisplayPrice = itemHasDiscount ? item.discount_price : item.price;
+
+              return (
+                  <div key={item.id} className="product-card" onClick={() => navigate(`/product/${item.slug}`)}>
+                      <div className="product-image-wrapper">
+                          {/* Add the sale tag here too! */}
+                          {itemHasDiscount && <span className="discount-tag">Sale</span>}
+                          <img src={item.main_image} alt={item.name} />
+                      </div>
+                      <div className="product-info">
+                          <h4>{item.name}</h4>
+                          <div className="price-container">
+                              <span className="current-price">{itemDisplayPrice} ETB</span>
+                              {itemHasDiscount && <span className="old-price">{item.price} ETB</span>}
+                          </div>
+                      </div>
+                  </div>
+              );
+            })} 
           </div>
         </section>
       </main>
