@@ -25,9 +25,6 @@ function Products() {
     }else if (categoryFilter){
       fetchUrl += `?category__name=${categoryFilter}`;
     }
-    // const fetchUrl = categoryFilter
-    //   ? `products/?category__name=${categoryFilter}`
-    //   : "products/";
 
     API.get(fetchUrl)
       .then((res) => {

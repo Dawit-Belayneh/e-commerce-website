@@ -49,10 +49,18 @@ function Navbar(){
 
     const handleSearch = (e) => {
         e.preventDefault();
-        if (searchQuery.trim()){
+        const query = searchQuery.trim().toLowerCase();
+        if (query) {
+        if (query === 'men') {
+            // Capitalize 'Men' to match Database if using 'exact'
+            navigate(`/products?category=Men`); 
+        } else if (query === 'women') {
+            navigate(`/products?category=Women`);
+        } else {
             navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
         }
-    }
+        }
+    };
 
     return(
         <nav className="navbar">
