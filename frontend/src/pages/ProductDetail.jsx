@@ -71,6 +71,8 @@ function ProductDetail() {
   const hasDiscount = product.discount_price && Number(product.discount_price) > 0;
   const currentPrice = hasDiscount ? product.discount_price : product.price;
 
+  const percentOff = hasDiscount ? Math.round((1 - (Number(product.discount_price) / Number(product.price))) * 100) : 0;
+
   return (
     <div className="page-layout">
       <Navbar />
@@ -80,7 +82,7 @@ function ProductDetail() {
           {/* LEFT: IMAGE GALLERY */}
           <div className="detail-image-section">
             <div className="main-image-box">
-              {hasDiscount && <span className="detail-sale-tag">Sale</span>}
+              {hasDiscount && <span className="detail-sale-tag">-{percentOff}% OFF</span>}
               <img src={product.main_image} alt={product.name} />
             </div>
           </div>

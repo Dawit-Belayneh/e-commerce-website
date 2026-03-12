@@ -20,10 +20,12 @@ function FeaturedProducts({ limit }){
                 {products.map((product) => {
                     const hasDiscount = product.discount_price && Number(product.discount_price) > 0;
                     const displayPrice = hasDiscount ? product.discount_price : product.price;
+
+                    const percentOff = hasDiscount ? Math.round((1 - (Number(product.discount_price) / Number(product.price))) * 100) : 0;
                     return (
                         <div key={product.id} className="product-card-v2" onClick={() => navigate(`/product/${product.slug}`)}>
                             <div className="image-wrapper">
-                                {hasDiscount && <span className="featured-sale-tag">Sale</span>}
+                                {hasDiscount && <span className="featured-sale-tag">-{percentOff}% OFF</span>}
                                 <img src={product.main_image || "https://via.placeholder.com/300"} alt={product.name} />
                                 <div className="overlay-actions">
                                     <button className="quick-view">Quick View</button>

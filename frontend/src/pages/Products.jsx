@@ -114,6 +114,8 @@ function Products() {
               const hasDiscount = product.discount_price && Number(product.discount_price) > 0;
               const displayPrice = hasDiscount ? product.discount_price : product.price;
 
+              const percentOff = hasDiscount ? Math.round((1 - (Number(product.discount_price) / Number(product.price))) * 100) : 0;
+
               return (
                 <div
                   key={product.id}
@@ -121,7 +123,7 @@ function Products() {
                   onClick={() => navigate(`/product/${product.slug}`)}
                 >
                   <div className="product-image-wrapper">
-                    {hasDiscount && <span className="discount-tag">Sale</span>}
+                    {hasDiscount && <span className="discount-tag">-{percentOff}% OFF</span>}
                     <img 
                       src={product.main_image || "https://via.placeholder.com/300"} 
                       alt={product.name} 
