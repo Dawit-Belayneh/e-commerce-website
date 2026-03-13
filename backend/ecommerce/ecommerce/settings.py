@@ -74,6 +74,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -168,3 +169,12 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=3)
 }
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",  # This fixes your specific error
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]

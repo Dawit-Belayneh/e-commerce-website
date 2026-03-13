@@ -1,6 +1,12 @@
 from django.shortcuts import render
+from rest_framework.response import Response
+from decimal import Decimal
+from rest_framework.decorators import api_view, permission_classes
+import uuid
+import django.db.transaction as transaction
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
-from rest_framework import generics, filters
+from rest_framework import generics, filters, status
 from .serializers import (
     SignupSerializer, CategorySerializer, ProductSerializer, ProductImageSerializer,
     ReviewSerializer, OrderSerializer, OrderItemSerializer, CartSerializer, CartItemSerializer,
@@ -84,12 +90,57 @@ class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 class OrderListCreateAPIView(generics.ListCreateAPIView):
 
     serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
     
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        user = request.user
+
+        print("Received Order Data:", data)  # Debugging line to see incoming data
+        try:
+            with transaction.atomic():
+                # 1. Create the Order
+                order = Order.objects.create(
+                    user=user,
+                    customer_name=data.get('customer_name'),
+                    customer_email=data.get('customer_email'),
+                    shipping_address=data.get('shipping_address'),
+                    total_amount=Decimal(str(data.get('total_amount'))) # Convert to Decimal
+                )
+
+                # 2. Create Order Items
+                items_data = data.get('items', [])
+                for item in items_data:
+                    OrderItem.objects.create(
+                        order=order,
+                        product_name=item['product_name'],
+                        quantity=item['quantity'],
+                        price_per_item=Decimal(str(item.get('price_per_item')))
+                    )
+
+                # 3. Create the Payment Record
+                # Ensure all fields required by your Payment model are here
+                Payment.objects.create(
+                    user=user,  # Most Payment models require a user!
+                    order=order,
+                    amount=Decimal(str(data.get('total_amount'))),
+                    payment_method=data.get('payment_method'),
+                    transaction_id=str(uuid.uuid4()),
+                    status='PENDING'
+                )
+
+                return Response({"id": order.id, "message": "Order created!"}, status=status.HTTP_201_CREATED)
+        
+        except Exception as e:
+            # This prints the error to your terminal so you can see it!
+            error_message = str(e)
+            print("CRITICAL DATABASE ERROR")
+            print(error_message)
+            print("CRITICAL ERROR IN VIEW:", str(e)) 
+            return Response({"error": "Internal Server Error", "message": error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class OrderRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
 
@@ -161,4 +212,3 @@ class PaymentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
 
     def get_queryset(self):
         return Payment.objects.filter(user=self.request.user)
-
