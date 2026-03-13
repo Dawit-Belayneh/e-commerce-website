@@ -1,15 +1,23 @@
 import { useState } from "react";
-import {useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+
 import API from "../api/axios";
 import "./Auth.css";
 
 function Login(){
     const navigate = useNavigate();
+    const location = useLocation();
+
 
     const [formData, setFormData] = useState({
         username:"",
         password:"",
     });
+
+    const handleLoginSuccess = () => {
+        const origin = location.state?.from || "/";
+        navigate(origin);
+    }
 
     const [error, setError] = useState("");
 
@@ -33,7 +41,7 @@ function Login(){
             localStorage.setItem("username", formData.username);
 
             alert("Login successful!");
-            navigate("/");
+            handleLoginSuccess();
         } catch (err) {
                 setError("Invalid credentials. Please try again.");
                 console.error(err.response?.data);

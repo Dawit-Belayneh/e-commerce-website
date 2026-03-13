@@ -9,18 +9,18 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   
   // Mock data - In a real app, you'd fetch this from localStorage or an API
-useEffect(() => {
-  const loadCart = () => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartItems(savedCart);
-  };
+  useEffect(() => {
+    const loadCart = () => {
+      const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+      setCartItems(savedCart);
+    };
 
-  loadCart();
-  
-  // Also listen for changes here in case user opens multiple tabs
-  window.addEventListener("cartUpdated", loadCart);
-  return () => window.removeEventListener("cartUpdated", loadCart);
-}, []);
+    loadCart();
+    
+    // Also listen for changes here in case user opens multiple tabs
+    window.addEventListener("cartUpdated", loadCart);
+    return () => window.removeEventListener("cartUpdated", loadCart);
+  }, []);
 
   const updateQuantity = (id, delta) => {
     const updated = cartItems.map(item => {
@@ -33,6 +33,18 @@ useEffect(() => {
     setCartItems(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
   };
+
+  const handleCheckoutNavigation = () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      alert("Please log in to proceed to checkout.");
+      navigate("/login", { state: { from: "/checkout"}});
+    } else {
+      navigate("/checkout");
+    }
+  };
+
+
 
   const removeItem = (id) => {
     const updated = cartItems.filter(item => item.id !== id);
@@ -112,7 +124,7 @@ useEffect(() => {
                 <span>{total.toFixed(2)} ETB</span>
               </div>
               
-              <button className="checkout-btn" onClick={() => navigate("/checkout")}>
+              <button className="checkout-btn" onClick={handleCheckoutNavigation}>
                 Proceed to Checkout
               </button>
               
