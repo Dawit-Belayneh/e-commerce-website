@@ -1,33 +1,97 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import API from "../api/axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import "./Checkout.css";
 
 function Checkout() {
   const navigate = useNavigate();
+  const location = useLocation(); // To catch "Buy Now" data
+
   const [cartItems, setCartItems] = useState([]);
-  const [paymentMethod, setPaymentMethod] = useState("telebirr");
+  const [paymentMethod, setPaymentMethod] = useState("BANK_TRANSFER"); // Matches your Model Choice
+  const [formData, setFormData] = useState({
+    customer_name: "",
+    customer_email: "",
+    shipping_address: "",
+    phone: ""
+  });
 
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    if (savedCart.length === 0) {
-      navigate("/products"); // Redirect if cart is empty
+    // Check if we came from "Buy Now" (single item in state)
+    if (location.state && location.state.buyNowItem) {
+      setCartItems([location.state.buyNowItem]);
+    } else {
+      // Otherwise, load full cart from localStorage
+      const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+      if (savedCart.length === 0) {
+        navigate("/products");
+      }
+      setCartItems(savedCart);
     }
-    setCartItems(savedCart);
-  }, [navigate]);
+  }, [location.state, navigate]);
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const shipping = 200; // Flat rate example
+  const shipping = 200;
   const total = subtotal + shipping;
 
-  const handlePlaceOrder = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    // Logic to send order to Django Backend
-    alert("Order Placed Successfully via " + paymentMethod);
-    localStorage.removeItem("cart"); // Clear cart after success
-    window.dispatchEvent(new Event("cartUpdated"));
-    navigate("/");
+
+    const token = localStorage.getItem("access_token");
+
+    console.log("Token being sent:", token);
+
+    if (!token) {
+        alert("Session expired. Please log in again.");
+        navigate("/login");
+        return;
+    }
+
+    const orderData = {
+      customer_name: formData.customer_name,
+      customer_email: formData.customer_email,
+      shipping_address: `${formData.shipping_address}, Phone: ${formData.phone}`,
+      total_amount: total,
+      items: cartItems.map(item => ({
+        product_name: item.name,
+        quantity: item.quantity,
+        price_per_item: item.price
+      })),
+      payment_method: paymentMethod === 'telebirr' ? 'BANK_TRANSFER' : 'CREDIT_CARD'
+    };
+
+    try {
+      const res = await API.post("orders/", orderData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      // Clear cart only if we didn't use "Buy Now" 
+      // (Or clear anyway if you want a clean slate)
+      if (!location.state?.buyNowItem) {
+        localStorage.removeItem("cart");
+        window.dispatchEvent(new Event("cartUpdated"));
+      }
+
+      alert("Order Placed Successfully!");
+      navigate("/order-success", { 
+        state: { 
+          orderId: res.data.id,
+          paymentMethod: paymentMethod,
+          totalAmount: total
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Error placing order. Please try again.");
+    }
   };
 
   return (
@@ -36,18 +100,17 @@ function Checkout() {
       <div className="checkout-container">
         <form className="checkout-form" onSubmit={handlePlaceOrder}>
           
-          {/* LEFT COLUMN: SHIPPING & PAYMENT */}
           <div className="checkout-left">
             <section className="checkout-section">
               <h2><span className="step-num">1</span> Shipping Address</h2>
               <div className="input-group">
-                <input type="text" placeholder="Full Name" required />
-                <input type="email" placeholder="Email Address" required />
+                <input type="text" name="customer_name" placeholder="Full Name" required onChange={handleChange} />
+                <input type="email" name="customer_email" placeholder="Email Address" required onChange={handleChange} />
               </div>
-              <input type="text" placeholder="Street Address" required />
+              <input type="text" name="shipping_address" placeholder="Street Address / Area" required onChange={handleChange} />
               <div className="input-group">
-                <input type="text" placeholder="City (e.g. Addis Ababa)" required />
-                <input type="text" placeholder="Phone Number (+251...)" required />
+                <input type="text" name="city" placeholder="City" required onChange={handleChange} />
+                <input type="text" name="phone" placeholder="Phone Number" required onChange={handleChange} />
               </div>
             </section>
 
@@ -55,15 +118,15 @@ function Checkout() {
               <h2><span className="step-num">2</span> Payment Method</h2>
               <div className="payment-options">
                 <label className={`pay-card ${paymentMethod === 'telebirr' ? 'active' : ''}`}>
-                  <input type="radio" name="payment" value="telebirr" checked={paymentMethod === 'telebirr'} onChange={(e) => setPaymentMethod(e.target.value)} />
+                  <input type="radio" name="payment" value="telebirr" checked={paymentMethod === 'telebirr'} onChange={() => setPaymentMethod('telebirr')} />
                   <div className="pay-info">
                     <strong>Telebirr / CBE Birr</strong>
-                    <span>Pay using mobile wallet</span>
+                    <span>Manual Bank Transfer</span>
                   </div>
                 </label>
                 
                 <label className={`pay-card ${paymentMethod === 'card' ? 'active' : ''}`}>
-                  <input type="radio" name="payment" value="card" onChange={(e) => setPaymentMethod(e.target.value)} />
+                  <input type="radio" name="payment" value="card" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} />
                   <div className="pay-info">
                     <strong>Credit / Debit Card</strong>
                     <span>Visa, Mastercard, Chapa</span>
@@ -73,13 +136,12 @@ function Checkout() {
             </section>
           </div>
 
-          {/* RIGHT COLUMN: ORDER SUMMARY */}
           <aside className="checkout-right">
             <div className="order-summary-box">
               <h3>Order Summary</h3>
               <div className="summary-items">
-                {cartItems.map(item => (
-                  <div key={item.id} className="summary-item">
+                {cartItems.map((item, index) => (
+                  <div key={index} className="summary-item">
                     <img src={item.main_image} alt={item.name} />
                     <div className="item-details">
                       <span>{item.name} (x{item.quantity})</span>
