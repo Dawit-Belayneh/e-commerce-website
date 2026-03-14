@@ -96,7 +96,7 @@ function Navbar(){
                     {isLoggedIn ? (
                         <>
                             <li className="user-greet">
-                                <Link to={`/profile/${username}`}>Hi, {username}</Link>
+                                <Link to="/profile">Hi, {username}</Link>
                             </li>
                             <li><button className="logout-link" onClick={handleLogout}>Logout</button></li>
                         </>
