@@ -7,6 +7,7 @@ import Signup from './pages/Signup';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Profile from './pages/Profile';
 
 
 
@@ -15,6 +16,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path = "/" element={<Home />} />
+        <Route path = "/profile" element={<Profile />} />
         <Route path = "/products" element={<Products />} />
         <Route path="/product/:slug" element={<ProductDetail />} />
         <Route path = "/categories" element={<CategoriesPage />} />
