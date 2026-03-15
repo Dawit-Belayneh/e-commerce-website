@@ -1,46 +1,99 @@
-.profile-container {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 20px;
+.profile-dashboard {
+  display: flex;
+  max-width: 1200px;
+  margin: 50px auto;
+  gap: 30px;
+  padding: 0 20px;
 }
 
-.profile-header {
+.profile-sidebar {
+  flex: 1;
+  max-width: 250px;
+}
+
+.user-profile-card {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
   text-align: center;
-  margin-bottom: 50px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 100px;
 }
 
-.avatar-circle {
+.avatar-large {
   width: 80px;
   height: 80px;
-  background-color: #007bff;
+  background: #222;
   color: white;
-  font-size: 2rem;
-  font-weight: bold;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  font-size: 2rem;
   margin: 0 auto 15px;
 }
 
-.order-card {
-  background: #fff;
-  border: 1px solid #eee;
-  padding: 20px;
+.logout-btn {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 10px 20px;
   border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  cursor: pointer;
+  margin-top: 20px;
 }
 
-.status-badge {
-  padding: 4px 10px;
+.profile-content {
+  flex: 3;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.orders-table th {
+  background: #f8f9fa;
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #eee;
+}
+
+.orders-table td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.status-tag {
+  padding: 5px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
-  margin-left: 10px;
+  font-size: 0.75rem;
+  font-weight: bold;
 }
 
-.status-badge.pending { background: #fff3cd; color: #856404; }
-.status-badge.completed { background: #d4edda; color: #155724; }
+.status-tag.delivered { background: #d4edda; color: #155724; }
+.status-tag.pending { background: #fff3cd; color: #856404; }
+
+.review-link-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.review-link-btn:hover { background: #0056b3; }
+
+.wait-msg {
+  font-size: 0.8rem;
+  color: #999;
+  font-style: italic;
+}

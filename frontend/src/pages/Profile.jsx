@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../api/axios";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -7,64 +8,88 @@ import "./Profile.css";
 function Profile() {
   const [userOrders, setUserOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const username = localStorage.getItem("username");
 
   useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        // Fetch orders for the logged-in user
-        const res = await API.get("orders/");
-        setUserOrders(res.data);
-      } catch (err) {
-        console.error("Error fetching profile data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfileData();
+    fetchOrders();
   }, []);
 
-  return (
-    <div className="page-layout">
-      <Navbar />
-      <div className="profile-container">
-        <header className="profile-header">
-          <div className="avatar-circle">
-            {username ? username[0].toUpperCase() : "U"}
-          </div>
-          <h1>Welcome, {username || "User"}!</h1>
-          <p>Manage your orders and account details here.</p>
-        </header>
+  const fetchOrders = async () => {
+    try {
+      const res = await API.get("orders/");
+      setUserOrders(res.data);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        <section className="order-history">
-          <h2>Your Order History</h2>
-          {loading ? (
-            <p>Loading your orders...</p>
-          ) : userOrders.length > 0 ? (
-            <div className="orders-list">
-              {userOrders.map((order) => (
-                <div key={order.id} className="order-card">
-                  <div className="order-info">
-                    <strong>Order #{order.id}</strong>
-                    <span>Date: {new Date(order.created_at).toLocaleDateString()}</span>
-                    <span className={`status-badge ${order.status?.toLowerCase()}`}>
-                      {order.status || "Pending"}
-                    </span>
-                  </div>
-                  <div className="order-total">
-                    <strong>Total: {order.total_amount} ETB</strong>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-orders">
-              <p>You haven't placed any orders yet.</p>
-              <button onClick={() => window.location.href='/products'}>Start Shopping</button>
-            </div>
-          )}
-        </section>
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  return (
+    <div className="profile-page">
+      <Navbar />
+      <div className="profile-dashboard">
+        <aside className="profile-sidebar">
+          <div className="user-profile-card">
+            <div className="avatar-large">{username ? username[0].toUpperCase() : "U"}</div>
+            <h3>{username}</h3>
+            <button className="logout-btn" onClick={handleLogout}>Logout</button>
+          </div>
+        </aside>
+
+        <main className="profile-content">
+          <div className="table-container">
+            <h2>Manage Your Orders</h2>
+            {loading ? <p>Loading...</p> : (
+              <table className="orders-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Product</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {userOrders.map((order) => 
+                    (order.items || []).map((item, idx) => (
+                      <tr key={`${order.id}-${idx}`}>
+                        <td>#{order.id}</td>
+                        <td className="prod-name-cell">{item.product_name}</td>
+                        <td>{new Date(order.created_at).toLocaleDateString()}</td>
+                        <td>
+                          <span className={`status-tag ${order.status?.toLowerCase()}`}>
+                            {order.status || "Pending"}
+                          </span>
+                        </td>
+                        <td>
+                          {/* ONLY SHOW BUTTON IF STATUS IS DELIVERED */}
+                          {order.status === "DELIVERED" ? (
+                            <button 
+                              className="review-link-btn"
+                              onClick={() => navigate(`/product/${item.product_name.toLowerCase().replace(/ /g, "-")}`, { state: { openReview: true } })}
+                            >
+                              Add Review
+                            </button>
+                          ) : (
+                            <span className="wait-msg">Await Delivery</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </main>
       </div>
       <Footer />
     </div>
