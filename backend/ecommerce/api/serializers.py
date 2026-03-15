@@ -68,6 +68,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
+
+    items = OrderItemSerializer(many=True, read_only=True)
     class Meta:
         model = Order
         fields = '__all__'
