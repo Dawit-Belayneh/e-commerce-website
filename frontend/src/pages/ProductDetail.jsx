@@ -12,6 +12,9 @@ function ProductDetail() {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0); // Reset scroll on page load
@@ -100,6 +103,26 @@ function ProductDetail() {
 
   const percentOff = hasDiscount ? Math.round((1 - (Number(product.discount_price) / Number(product.price))) * 100) : 0;
 
+  const handlePostReview = async () => {
+    if (!comment) return alert("Please write a comment!");
+
+    setSubmitting(true);
+
+    try {
+      await API.post("reviews/", {
+        product: product.id,
+        rating: rating,
+        comment: comment,
+      });
+      alert("Review posted successfully!");
+      setComment("");
+    } catch (err) {
+      console.error("Error posting review:", err.response?.data);
+      alert("Failed to post review. You might have already reviewed this product.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
   return (
     <div className="page-layout">
       <Navbar />
@@ -159,24 +182,50 @@ function ProductDetail() {
         <hr className="section-divider" />
 
         {/* REVIEWS & COMMENTS SECTION */}
-        <section className="reviews-section">
+        <section className="reviews-section" id="review-section">
           <h2>Customer Feedback</h2>
+          
           <div className="review-input-box">
-            <textarea placeholder="Write your review here..."></textarea>
+            <textarea 
+              placeholder="Write your review here..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            ></textarea>
+            
             <div className="submit-row">
-              <div className="rate-it">Rate: ★★★★☆</div>
-              <button className="post-review-btn">Post Comment</button>
+              <div className="rate-it">
+                Rate: {[1, 2, 3, 4, 5].map((star) => (
+                  <span 
+                    key={star} 
+                    onClick={() => setRating(star)}
+                    style={{ cursor: 'pointer', color: star <= rating ? '#ffc107' : '#e4e5e9', fontSize: '1.5rem' }}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+              <button 
+                className="post-review-btn" 
+                onClick={handlePostReview}
+                disabled={submitting}
+              >
+                {submitting ? "Posting..." : "Post Comment"}
+              </button>
             </div>
           </div>
-          
+
+          {/* Display actual reviews from backend */}
           <div className="comments-list">
-            <div className="comment-item">
-              <div className="user-avatar">JD</div>
-              <div className="comment-content">
-                <strong>John Doe</strong> <span>★★★★★</span>
-                <p>Amazing quality! The material is very premium. Highly recommended.</p>
+            {product.reviews?.map((rev) => (
+              <div className="comment-item" key={rev.id}>
+                <div className="user-avatar">{rev.user_name?.[0] || 'U'}</div>
+                <div className="comment-content">
+                  <strong>{rev.user_name}</strong> 
+                  <span className="stars">{"★".repeat(rev.rating)}{"☆".repeat(5 - rev.rating)}</span>
+                  <p>{rev.comment}</p>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </section>
 
