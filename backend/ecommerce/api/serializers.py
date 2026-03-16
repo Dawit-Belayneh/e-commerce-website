@@ -57,9 +57,13 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['image', 'is_main']
 
 class ReviewSerializer(serializers.ModelSerializer):
+
+    user_name = serializers.ReadOnlyField(source='user.username')
     class Meta:
         model = Review
         fields = '__all__'
+
+        read_only_fields = ['user']
 
 # Serializers for Order and OrderItem models
 class OrderItemSerializer(serializers.ModelSerializer):
