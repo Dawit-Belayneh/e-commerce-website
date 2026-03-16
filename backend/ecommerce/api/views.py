@@ -113,9 +113,13 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
 
                 # 2. Create Order Items
                 items_data = data.get('items', [])
+
+                product_obj = Product.objects.filter(name=item['product_name']).first()
+
                 for item in items_data:
                     OrderItem.objects.create(
                         order=order,
+                        product=product_obj,
                         product_name=item['product_name'],
                         quantity=item['quantity'],
                         price_per_item=Decimal(str(item.get('price_per_item')))

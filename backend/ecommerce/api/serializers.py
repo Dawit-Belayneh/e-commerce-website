@@ -63,6 +63,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 # Serializers for Order and OrderItem models
 class OrderItemSerializer(serializers.ModelSerializer):
+
+    product_slug = serializers.ReadOnlyField(source="product.slug")
+
     class Meta:
         model = OrderItem
         fields = '__all__'
