@@ -109,13 +109,23 @@ function ProductDetail() {
     setSubmitting(true);
 
     try {
-      await API.post("reviews/", {
+      const res = await API.post("reviews/", {
         product: product.id,
         rating: rating,
         comment: comment,
       });
       alert("Review posted successfully!");
+      
+      setProduct(prevProduct => {
+        const currentReviews = Array.isArray(prevProduct.reviews) ? prevProduct.reviews : [];
+
+        return {
+          ...prevProduct,
+          reviews: [res.data, ...currentReviews]
+        };
+      })
       setComment("");
+      setRating(5);
     } catch (err) {
       console.error("Error posting review:", err.response?.data);
       alert("Failed to post review. You might have already reviewed this product.");
@@ -216,16 +226,31 @@ function ProductDetail() {
 
           {/* Display actual reviews from backend */}
           <div className="comments-list">
-            {product.reviews?.map((rev) => (
-              <div className="comment-item" key={rev.id}>
-                <div className="user-avatar">{rev.user_name?.[0] || 'U'}</div>
-                <div className="comment-content">
-                  <strong>{rev.user_name}</strong> 
-                  <span className="stars">{"★".repeat(rev.rating)}{"☆".repeat(5 - rev.rating)}</span>
-                  <p>{rev.comment}</p>
-                </div>
-              </div>
-            ))}
+            {product.reviews && product.reviews.length > 0 ? (
+                product.reviews.map((rev) => (
+                    <div className="comment-item" key={rev.id}>
+                        {/* User Initial Circle */}
+                        <div className="user-avatar-circle">
+                            {rev.user_name ? rev.user_name[0].toUpperCase() : 'U'}
+                        </div>
+                        
+                        <div className="comment-content">
+                            <div className="comment-header">
+                                <span className="user-name">{rev.user_name}</span>
+                                <span className="stars-display">
+                                    {"★".repeat(rev.rating)}{"☆".repeat(5 - rev.rating)}
+                                </span>
+                            </div>
+                            <p className="user-comment-text">{rev.comment}</p>
+                            <small className="comment-date">
+                                {new Date(rev.created_at).toLocaleDateString()}
+                            </small>
+                        </div>
+                    </div>
+                  ))
+              ) : (
+                  <p className="no-reviews">No reviews yet. Be the first to review!</p>
+              )}
           </div>
         </section>
 

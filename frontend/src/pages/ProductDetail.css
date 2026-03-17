@@ -95,6 +95,54 @@
   margin-bottom: 15px;
 }
 
+.comment-item {
+    display: flex;
+    gap: 15px;
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.user-avatar-circle {
+    width: 45px;
+    height: 45px;
+    background: #444;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.user-name {
+    font-weight: 700;
+    color: #333;
+}
+
+.stars-display {
+    color: #ffc107;
+    font-size: 0.9rem;
+}
+
+.user-comment-text {
+    color: #555;
+    line-height: 1.5;
+    margin: 5px 0;
+}
+
+.comment-date {
+    color: #999;
+    font-size: 0.75rem;
+}
+
 @media (max-width: 768px) {
   .product-main-view { grid-template-columns: 1fr; }
 }
