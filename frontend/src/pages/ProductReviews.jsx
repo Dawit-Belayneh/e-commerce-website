@@ -21,6 +21,21 @@ function ProductReviews() {
     fetchData();
   }, [slug]);
 
+  const handleDelete = async (reviewId) => {
+    if (!window.confirm("Are you sure you want to delete this review?")) return;
+    try {
+      await API.delete(`reviews/${reviewId}/`);
+      // Update local state to remove the deleted review
+      setProduct(prev => ({
+        ...prev,
+        reviews: prev.reviews.filter(r => r.id !== reviewId)
+      }));
+    } catch (err) {
+      console.error("Error deleting review:", err);
+    }
+  };
+
+
   const fetchData = async () => {
     try {
       const res = await API.get(`products/${slug}/`);
@@ -31,11 +46,11 @@ function ProductReviews() {
       const token = localStorage.getItem("access_token");
       if (token) {
         const orderRes = await API.get("orders/");
-        const hasDeliveredOrder = orderRes.data.some(order => 
+        const hasDelivered = orderRes.data.some(order => 
           order.status === "DELIVERED" && 
           order.items.some(item => item.product_name === productData.name)
         );
-        setCanReview(hasDeliveredOrder);
+        setCanReview(hasDelivered);
       }
       setLoading(false);
     } catch (err) {
@@ -114,6 +129,12 @@ function ProductReviews() {
                 <div className="review-header">
                   <strong>{rev.user_name}</strong>
                   <span className="stars">{"★".repeat(rev.rating)}</span>
+                  {/* OWNER ACTIONS: Only show if this review belongs to the user */}
+                    {rev.user_name === localStorage.getItem("username") && (
+                      <div className="owner-actions">
+                        <button onClick={() => handleDelete(rev.id)} className="del-btn">Delete</button>
+                      </div>
+                    )}
                 </div>
                 <p>{rev.comment}</p>
                 <small>{new Date(rev.created_at).toLocaleDateString()}</small>
