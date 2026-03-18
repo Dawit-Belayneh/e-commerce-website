@@ -39,9 +39,19 @@ class CategoryImageSerializer(serializers.ModelSerializer):
         model = CategoryImage
         fields = ['image', 'is_main']
 
+class ReviewSerializer(serializers.ModelSerializer):
+
+    user_name = serializers.ReadOnlyField(source='user.username')
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+        read_only_fields = ['user']
+
 class ProductSerializer(serializers.ModelSerializer):
     main_image = serializers.SerializerMethodField()
     category_name = serializers.ReadOnlyField(source='category.name')
+    reviews = ReviewSerializer(many=True, read_only=True)   
     class Meta:
         model = Product
         fields = '__all__'
@@ -56,14 +66,6 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = ProductImage
         fields = ['image', 'is_main']
 
-class ReviewSerializer(serializers.ModelSerializer):
-
-    user_name = serializers.ReadOnlyField(source='user.username')
-    class Meta:
-        model = Review
-        fields = '__all__'
-
-        read_only_fields = ['user']
 
 # Serializers for Order and OrderItem models
 class OrderItemSerializer(serializers.ModelSerializer):

@@ -94,11 +94,12 @@ class ReviewListCreateAPIView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         product_id = self.request.data.get('product')
         
+        product_obj = Product.objects.filter(id=product_id)
         # BACKEND SECURITY: Check if user has a DELIVERED order for this product
         has_purchased = Order.objects.filter(
             user=self.request.user,
             status='DELIVERED',
-            items__product_id=product_id # This assumes OrderItem has a ForeignKey to Product
+            items__product_id=product_obj.name # This assumes OrderItem has a ForeignKey to Product
         ).exists()
 
         if not has_purchased:
