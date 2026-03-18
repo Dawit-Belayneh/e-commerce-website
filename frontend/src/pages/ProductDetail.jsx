@@ -15,6 +15,7 @@ function ProductDetail() {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [canReview, setCanReview] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0); // Reset scroll on page load
@@ -22,7 +23,24 @@ function ProductDetail() {
     
     API.get(`products/${slug}/`)
       .then((res) => {
+        const productData = res.data;
         setProduct(res.data);
+
+        // --- NEW: CHECK IF USER CAN REVIEW ---
+        const token = localStorage.getItem("access_token");
+        if (token){
+          API.get("orders/")
+            .then((orderRes) => {
+              const orders = orderRes.data;
+
+              const hasDeliveredOrder = orders.some(order =>
+                order.status === "DELIVERED" &&
+                orders.items.some(item => item.product_id === productData.name)
+              );
+              setCanReview(hasDeliveredOrder);
+          })        
+            .catch(err => console.error("Order fetch failed", err));
+          }
         // Fetch related products from the same category
         return API.get(`products/?category__name=${res.data.category_name}&limit=4`);
       })
@@ -192,66 +210,60 @@ function ProductDetail() {
         <hr className="section-divider" />
 
         {/* REVIEWS & COMMENTS SECTION */}
-        <section className="reviews-section" id="review-section">
+        <section className="reviews-section">
           <h2>Customer Feedback</h2>
-          
-          <div className="review-input-box">
-            <textarea 
-              placeholder="Write your review here..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            ></textarea>
-            
-            <div className="submit-row">
-              <div className="rate-it">
-                Rate: {[1, 2, 3, 4, 5].map((star) => (
-                  <span 
-                    key={star} 
-                    onClick={() => setRating(star)}
-                    style={{ cursor: 'pointer', color: star <= rating ? '#ffc107' : '#e4e5e9', fontSize: '1.5rem' }}
-                  >
-                    ★
-                  </span>
-                ))}
+
+          {/* Only show input if they bought it and it's delivered */}
+          {canReview ? (
+            <div className="review-input-box">
+              <textarea 
+                placeholder="Write your review here..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              ></textarea>
+              <div className="submit-row">
+                <div className="rate-it">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={star} onClick={() => setRating(star)} style={{ cursor: 'pointer', color: star <= rating ? '#ffc107' : '#ddd' }}>
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <button className="post-review-btn" onClick={handlePostReview} disabled={submitting}>
+                  {submitting ? "Posting..." : "Post Comment"}
+                </button>
               </div>
-              <button 
-                className="post-review-btn" 
-                onClick={handlePostReview}
-                disabled={submitting}
-              >
-                {submitting ? "Posting..." : "Post Comment"}
-              </button>
             </div>
+          ) : (
+            <div className="review-locked-msg">
+              <p>Only customers who purchased this item and received delivery can leave a review.</p>
+            </div>
+          )}
+
+          {/* Display limited reviews */}
+          <div className="comments-list">
+            {(product.reviews || []).slice(0, 3).map((rev) => (
+              <div className="comment-item" key={rev.id}>
+                <div className="user-avatar">{rev.user_name?.[0]}</div>
+                <div className="comment-content">
+                  <strong>{rev.user_name}</strong> <span>{"★".repeat(rev.rating)}</span>
+                  <p>{rev.comment}</p>
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Display actual reviews from backend */}
-          <div className="comments-list">
-            {product.reviews && product.reviews.length > 0 ? (
-                product.reviews.map((rev) => (
-                    <div className="comment-item" key={rev.id}>
-                        {/* User Initial Circle */}
-                        <div className="user-avatar-circle">
-                            {rev.user_name ? rev.user_name[0].toUpperCase() : 'U'}
-                        </div>
-                        
-                        <div className="comment-content">
-                            <div className="comment-header">
-                                <span className="user-name">{rev.user_name}</span>
-                                <span className="stars-display">
-                                    {"★".repeat(rev.rating)}{"☆".repeat(5 - rev.rating)}
-                                </span>
-                            </div>
-                            <p className="user-comment-text">{rev.comment}</p>
-                            <small className="comment-date">
-                                {new Date(rev.created_at).toLocaleDateString()}
-                            </small>
-                        </div>
-                    </div>
-                  ))
-              ) : (
-                  <p className="no-reviews">No reviews yet. Be the first to review!</p>
-              )}
-          </div>
+          {/* See More Link */}
+          {product?.reviews?.length > 3 && (
+            <div className="see-more-reviews-wrapper">
+              <button 
+                className="see-more-btn" 
+                onClick={() => navigate(`/product/${product.slug}/reviews`)}
+              >
+                See All {product.reviews.length} Reviews →
+              </button>
+            </div>
+          )}
         </section>
 
         {/* SUGGESTED PRODUCTS */}

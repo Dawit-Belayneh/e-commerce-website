@@ -75,13 +75,8 @@ function Profile() {
                             <button 
                               className="review-link-btn"
                               onClick={() => {
-                                const targetSlug = item.product_slug;
-                                if (targetSlug){
-                                  navigate(`/product/${targetSlug}`, { state: { openReview: true } });
-                                } else {
-                                  const fallback = item.product_name.toLowerCase().replace(/ /g, "-");
-                                  navigate(`/product/${fallback}`, { state: { openReview: true } });
-                                }
+                                const slug = item.product_slug || item.product_name.toLowerCase().replace(/ /g, "-");
+                                navigate(`/product/${slug}/reviews`);
                               }}
                             >
                               Add Review

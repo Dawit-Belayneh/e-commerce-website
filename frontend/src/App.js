@@ -8,6 +8,7 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
+import ProductReviews from './pages/ProductReviews';
 
 
 
@@ -22,6 +23,7 @@ function App() {
         <Route path = "/categories" element={<CategoriesPage />} />
         <Route path = "/cart" element={<Cart />} />
         <Route path = "/checkout" element={<Checkout />} />
+        <Route path="/product/:slug/reviews" element={<ProductReviews />} />
         <Route path = "/login" element={<Login />} />
         <Route path = "/signup" element={<Signup />} />
       </Routes>

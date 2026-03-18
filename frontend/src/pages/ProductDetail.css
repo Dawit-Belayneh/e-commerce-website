@@ -143,6 +143,38 @@
     font-size: 0.75rem;
 }
 
+.see-more-reviews-wrapper {
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 10px;
+}
+
+.see-more-btn {
+  background: transparent;
+  color: #007bff;
+  border: 2px solid #007bff;
+  padding: 10px 25px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.see-more-btn:hover {
+  background: #007bff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+.no-reviews {
+  text-align: center;
+  color: #888;
+  padding: 40px 0;
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .product-main-view { grid-template-columns: 1fr; }
 }
