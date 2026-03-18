@@ -93,17 +93,26 @@ class ReviewListCreateAPIView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         product_id = self.request.data.get('product')
+        from products.models import Product
+
+        try:
+        # Use .get() to get the actual object, not .filter()
+            product_obj = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            raise ValidationError({"product": "Product not found."})
         
-        product_obj = Product.objects.filter(id=product_id)
         # BACKEND SECURITY: Check if user has a DELIVERED order for this product
         has_purchased = Order.objects.filter(
             user=self.request.user,
             status='DELIVERED',
-            items__product_id=product_obj.name # This assumes OrderItem has a ForeignKey to Product
+            items__product_name=product_obj.name # This assumes OrderItem has a ForeignKey to Product
         ).exists()
 
         if not has_purchased:
             raise ValidationError("You can only review products you have purchased and received.")
+        
+        if Review.objects.filter(product=product_obj, user=self.request.user).exists():
+            raise ValidationError({"detail": "You have already reviewed this product."})
 
         serializer.save(user=self.request.user)
 
@@ -112,11 +121,6 @@ class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewSerializer
     # Use our custom permission: Anyone can view, only owner can Edit/Delete
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
-        
-class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated] 
 
 class OrderListCreateAPIView(generics.ListCreateAPIView):
 
