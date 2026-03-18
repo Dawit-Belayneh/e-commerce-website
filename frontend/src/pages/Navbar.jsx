@@ -40,13 +40,6 @@ function Navbar(){
     return () => window.removeEventListener("cartUpdated", updateCount);
     }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        localStorage.removeItem("username");
-        setIsLoggedIn(false);
-    };
-
     const handleSearch = (e) => {
         e.preventDefault();
         const query = searchQuery.trim().toLowerCase();
@@ -98,7 +91,6 @@ function Navbar(){
                             <li className="user-greet">
                                 <Link to="/profile">Hi, {username}</Link>
                             </li>
-                            <li><button className="logout-link" onClick={handleLogout}>Logout</button></li>
                         </>
                     ) : (
                         <li><Link to="/login" className="login-link">Sign In</Link></li>
