@@ -1,4 +1,6 @@
+from django.forms import ValidationError
 from django.shortcuts import render
+from rest_framework import permissions
 from rest_framework.response import Response
 from decimal import Decimal
 from rest_framework.decorators import api_view, permission_classes
@@ -16,6 +18,7 @@ from orders.models import Order, OrderItem, Cart, CartItem
 from payments.models import Payment
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
+from .permissions import IsAuthorOrReadOnly
 User = get_user_model()
 
 # Create your views here.
@@ -80,10 +83,34 @@ class ProductImageRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPI
 class ReviewListCreateAPIView(generics.ListCreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        # allow anyone to (even logged out) to view revies
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        # only logged in users can post
+        return [permissions.IsAuthenticated()]
 
     def perform_create(self, serializer):
+        product_id = self.request.data.get('product')
+        
+        # BACKEND SECURITY: Check if user has a DELIVERED order for this product
+        has_purchased = Order.objects.filter(
+            user=self.request.user,
+            status='DELIVERED',
+            items__product_id=product_id # This assumes OrderItem has a ForeignKey to Product
+        ).exists()
+
+        if not has_purchased:
+            raise ValidationError("You can only review products you have purchased and received.")
+
         serializer.save(user=self.request.user)
+
+class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    # Use our custom permission: Anyone can view, only owner can Edit/Delete
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
         
 class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
