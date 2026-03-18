@@ -18,36 +18,37 @@ function ProductDetail() {
   const [canReview, setCanReview] = useState(false);
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Reset scroll on page load
+    window.scrollTo(0, 0);
     setLoading(true);
-    
+
     API.get(`products/${slug}/`)
       .then((res) => {
         const productData = res.data;
-        setProduct(res.data);
+        setProduct(productData);
 
-        // --- NEW: CHECK IF USER CAN REVIEW ---
+        // --- CHECK ELIGIBILITY FROM BACKEND ---
         const token = localStorage.getItem("access_token");
-        if (token){
+        if (token) {
           API.get("orders/")
             .then((orderRes) => {
-              const orders = orderRes.data;
-
-              const hasDeliveredOrder = orders.some(order =>
-                order.status === "DELIVERED" &&
-                orders.items.some(item => item.product_id === productData.name)
+              const userOrders = orderRes.data; // This is the array of orders
+              
+              // Logic: Check if any order is DELIVERED AND contains this product name
+              const hasDeliveredOrder = userOrders.some(order => 
+                order.status === "DELIVERED" && 
+                order.items.some(item => item.product_name === productData.name)
               );
+              
               setCanReview(hasDeliveredOrder);
-          })        
+            })
             .catch(err => console.error("Order fetch failed", err));
-          }
-        // Fetch related products from the same category
-        return API.get(`products/?category__name=${res.data.category_name}&limit=4`);
+        }
+
+        return API.get(`products/?category__name=${productData.category_name}&limit=4`);
       })
       .then((res) => {
         const allProducts = res.data.results || res.data;
-        
-        const filtered = allProducts.filter(p => p.slug !== slug)
+        const filtered = allProducts.filter(p => p.slug !== slug);
         setRelatedProducts(filtered);
         setLoading(false);
       })
@@ -213,57 +214,33 @@ function ProductDetail() {
         <section className="reviews-section">
           <h2>Customer Feedback</h2>
 
-          {/* Only show input if they bought it and it's delivered */}
-          {canReview ? (
-            <div className="review-input-box">
-              <textarea 
-                placeholder="Write your review here..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              ></textarea>
-              <div className="submit-row">
-                <div className="rate-it">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span key={star} onClick={() => setRating(star)} style={{ cursor: 'pointer', color: star <= rating ? '#ffc107' : '#ddd' }}>
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <button className="post-review-btn" onClick={handlePostReview} disabled={submitting}>
-                  {submitting ? "Posting..." : "Post Comment"}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="review-locked-msg">
-              <p>Only customers who purchased this item and received delivery can leave a review.</p>
-            </div>
-          )}
-
-          {/* Display limited reviews */}
+          {/* Display limited reviews for everyone to read */}
           <div className="comments-list">
-            {(product.reviews || []).slice(0, 3).map((rev) => (
-              <div className="comment-item" key={rev.id}>
-                <div className="user-avatar">{rev.user_name?.[0]}</div>
-                <div className="comment-content">
-                  <strong>{rev.user_name}</strong> <span>{"★".repeat(rev.rating)}</span>
-                  <p>{rev.comment}</p>
+            {product.reviews && product.reviews.length > 0 ? (
+              product.reviews.slice(0, 3).map((rev) => (
+                <div className="comment-item" key={rev.id}>
+                  <div className="user-avatar">{rev.user_name?.[0]}</div>
+                  <div className="comment-content">
+                    <strong>{rev.user_name}</strong> 
+                    <span className="stars">{"★".repeat(rev.rating)}</span>
+                    <p>{rev.comment}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p>No reviews yet.</p>
+            )}
           </div>
 
-          {/* See More Link */}
-          {product?.reviews?.length > 3 && (
-            <div className="see-more-reviews-wrapper">
-              <button 
-                className="see-more-btn" 
-                onClick={() => navigate(`/product/${product.slug}/reviews`)}
-              >
-                See All {product.reviews.length} Reviews →
-              </button>
-            </div>
-          )}
+          {/* Link to see ALL reviews and allow buyers to post */}
+          <div className="see-more-reviews-wrapper">
+            <button 
+              className="see-more-btn" 
+              onClick={() => navigate(`/product/${product.slug}/reviews`)}
+            >
+              {product.reviews?.length > 0 ? `See All ${product.reviews.length} Reviews` : "Write a Review"}
+            </button>
+          </div>
         </section>
 
         {/* SUGGESTED PRODUCTS */}
