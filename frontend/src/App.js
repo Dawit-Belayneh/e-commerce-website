@@ -9,6 +9,7 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import ProductReviews from './pages/ProductReviews';
+import OrderSuccess from './pages/OrderSuccess';
 
 
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/product/:slug/reviews" element={<ProductReviews />} />
         <Route path = "/login" element={<Login />} />
         <Route path = "/signup" element={<Signup />} />
+        <Route path = "/order-success" element={<OrderSuccess />} />
       </Routes>
     </BrowserRouter>
   );
