@@ -12,10 +12,6 @@ function ProductDetail() {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [canReview, setCanReview] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -25,25 +21,6 @@ function ProductDetail() {
       .then((res) => {
         const productData = res.data;
         setProduct(productData);
-
-        // --- CHECK ELIGIBILITY FROM BACKEND ---
-        const token = localStorage.getItem("access_token");
-        if (token) {
-          API.get("orders/")
-            .then((orderRes) => {
-              const userOrders = orderRes.data; // This is the array of orders
-              
-              // Logic: Check if any order is DELIVERED AND contains this product name
-              const hasDeliveredOrder = userOrders.some(order => 
-                order.status === "DELIVERED" && 
-                order.items.some(item => item.product_name === productData.name)
-              );
-              
-              setCanReview(hasDeliveredOrder);
-            })
-            .catch(err => console.error("Order fetch failed", err));
-        }
-
         return API.get(`products/?category__name=${productData.category_name}&limit=4`);
       })
       .then((res) => {
@@ -61,18 +38,13 @@ function ProductDetail() {
   if (loading) return <div className="loader">Loading Product...</div>;
   if (!product) return <div className="error">Product not found.</div>;
 
-    const addToCart = () => {
-    // 1. Get existing cart
+  const addToCart = () => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    // 2. Check if product is already there
     const existingItemIndex = cart.findIndex((item) => item.id === product.id);
 
     if (existingItemIndex > -1) {
-      // Increase quantity if it exists
       cart[existingItemIndex].quantity += quantity;
     } else {
-      // Add new item if it doesn't
       cart.push({
         id: product.id,
         name: product.name,
@@ -82,12 +54,8 @@ function ProductDetail() {
       });
     }
 
-    // 3. Save to localStorage
     localStorage.setItem("cart", JSON.stringify(cart));
-
-    // 4. IMPORTANT: Send the signal to Navbar
     window.dispatchEvent(new Event("cartUpdated"));
-
     alert("Item added to cart!");
   };
 
@@ -99,59 +67,15 @@ function ProductDetail() {
       return;
     }
 
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingItemIndex = cart.findIndex((item) => item.id === product.id);
-
-    if (existingItemIndex > -1){
-      cart[existingItemIndex].quantity += quantity;
-    } else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: product.discount_price || product.price,
-        main_image: product.main_image,
-        quantity: quantity,
-      });
-    }
-    localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cartUpdated"));
+    // Reuse addToCart logic but navigate to checkout
+    addToCart();
     navigate("/checkout");
   };
+
   const hasDiscount = product.discount_price && Number(product.discount_price) > 0;
   const currentPrice = hasDiscount ? product.discount_price : product.price;
-
   const percentOff = hasDiscount ? Math.round((1 - (Number(product.discount_price) / Number(product.price))) * 100) : 0;
 
-  const handlePostReview = async () => {
-    if (!comment) return alert("Please write a comment!");
-
-    setSubmitting(true);
-
-    try {
-      const res = await API.post("reviews/", {
-        product: product.id,
-        rating: rating,
-        comment: comment,
-      });
-      alert("Review posted successfully!");
-      
-      setProduct(prevProduct => {
-        const currentReviews = Array.isArray(prevProduct.reviews) ? prevProduct.reviews : [];
-
-        return {
-          ...prevProduct,
-          reviews: [res.data, ...currentReviews]
-        };
-      })
-      setComment("");
-      setRating(5);
-    } catch (err) {
-      console.error("Error posting review:", err.response?.data);
-      alert("Failed to post review. You might have already reviewed this product.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
   return (
     <div className="page-layout">
       <Navbar />
@@ -174,11 +98,12 @@ function ProductDetail() {
             
             <div className="detail-rating">
               <span className="stars">
-                {/* Display gold stars for the average rating and gray for the rest */}
-                {"★".repeat(Math.floor(product.average_rating))}
-                {"☆".repeat(5 - Math.floor(product.average_rating))}
+                {"★".repeat(Math.floor(product.average_rating || 0))}
+                {"☆".repeat(5 - Math.floor(product.average_rating || 0))}
               </span>
-              <span className="review-count">({product.average_rating} / 5 based on {product.total_reviews} reviews)</span>
+              <span className="review-count">
+                ({product.average_rating || 0} / 5 based on {product.total_reviews || 0} reviews)
+              </span>
             </div>
 
             <div className="detail-price-row">
@@ -218,7 +143,6 @@ function ProductDetail() {
         <section className="reviews-section">
           <h2>Customer Feedback</h2>
 
-          {/* Display limited reviews for everyone to read */}
           <div className="comments-list">
             {product.reviews && product.reviews.length > 0 ? (
               product.reviews.slice(0, 3).map((rev) => (
@@ -236,7 +160,6 @@ function ProductDetail() {
             )}
           </div>
 
-          {/* Link to see ALL reviews and allow buyers to post */}
           <div className="see-more-reviews-wrapper">
             <button 
               className="see-more-btn" 
@@ -258,7 +181,6 @@ function ProductDetail() {
               return (
                   <div key={item.id} className="product-card" onClick={() => navigate(`/product/${item.slug}`)}>
                       <div className="product-image-wrapper">
-                          {/* Add the sale tag here too! */}
                           {itemHasDiscount && <span className="discount-tag">Sale</span>}
                           <img src={item.main_image} alt={item.name} />
                       </div>

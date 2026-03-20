@@ -49,7 +49,7 @@ function OrderSuccess() {
             <Link to="/" className="btn-primary">
               Continue Shopping
             </Link>
-            <Link to="/orders" className="btn-secondary">
+            <Link to="/profile" className="btn-secondary">
               View My Orders
             </Link>
           </div>
