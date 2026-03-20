@@ -173,8 +173,12 @@ function ProductDetail() {
             <h1 className="detail-title">{product.name}</h1>
             
             <div className="detail-rating">
-              <span className="stars">★★★★☆</span>
-              <span className="review-count">(12 Customer Reviews)</span>
+              <span className="stars">
+                {/* Display gold stars for the average rating and gray for the rest */}
+                {"★".repeat(Math.floor(product.average_rating))}
+                {"☆".repeat(5 - Math.floor(product.average_rating))}
+              </span>
+              <span className="review-count">({product.average_rating} / 5 based on {product.total_reviews} reviews)</span>
             </div>
 
             <div className="detail-price-row">

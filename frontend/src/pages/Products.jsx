@@ -133,10 +133,11 @@ function Products() {
                   <div className="product-info">
                     {/* 5-Star Rating Section */}
                     <div className="rating-stars">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className={i < 4 ? "star filled" : "star"}>★</span>
-                      ))}
-                      <span className="rating-text">(4.0)</span>
+                        <span className="stars">
+                          {"★".repeat(Math.floor(product.average_rating))}
+                          {"☆".repeat(5 - Math.floor(product.average_rating))}
+                        </span>
+                      <span className="rating-text">({product.average_rating} / 5 based on {product.total_reviews} reviews)</span>
                     </div>
 
                     <h3 className="product-title">{product.name}</h3>
