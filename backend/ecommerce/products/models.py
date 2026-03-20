@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from cloudinary.models import CloudinaryField
 from django.forms import URLField
+from django.db.models import Avg
 
 
 
@@ -37,6 +38,15 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def average_rating(self):
+        avg = self.reviews.aggregate(Avg('rating'))['rating__avg']
+        return round(avg, 1) if avg else 0
+    
+    @property
+    def total_reviews(self):
+        return self.reviews.count()
 
     def __str__(self):
         return self.name
