@@ -121,7 +121,11 @@ class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewSerializer
     # Use our custom permission: Anyone can view, only owner can Edit/Delete
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
-
+    
+    def get_object(self):
+        obj = super().get_object()
+        print(f"Deleting review {obj.id} by user {self.request.user}")
+        return obj
 class OrderListCreateAPIView(generics.ListCreateAPIView):
 
     serializer_class = OrderSerializer
