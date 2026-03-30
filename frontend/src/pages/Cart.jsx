@@ -53,7 +53,7 @@ function Cart() {
   };
 
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const shipping = subtotal > 0 ? 200 : 0; // Example 200 ETB shipping
+  const shipping = subtotal > 0 ? 200 : 0; 
   const total = subtotal + shipping;
 
   return (
